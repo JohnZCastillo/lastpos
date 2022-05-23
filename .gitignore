@@ -1,0 +1,15 @@
+### Global ###
+*.class
+*/*.class
+
+# vscode #
+.vscode/
+bin/
+
+### netbeans ###
+nbproject/
+dist/
+build/
+nbdist/
+.nb-gradle/
+target/
