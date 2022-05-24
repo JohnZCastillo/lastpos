@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class CategoryTracker {
     
-    private List<SimpleStringProperty> categories;
+    final private ObservableList<SimpleStringProperty> categories = FXCollections.observableArrayList();
     private SimpleDb db;
     
     private CategoryTracker() {
@@ -24,8 +24,7 @@ public class CategoryTracker {
         
         try {
             
-            categories = FXCollections.observableArrayList(
-                    db.getList()
+            categories.addAll(db.getList()
                             .stream()
                             .map(car -> new Category(car))
                             .collect(Collectors.toList()));
@@ -58,7 +57,7 @@ public class CategoryTracker {
         private static final CategoryTracker INSTANCE = new CategoryTracker();
     }
     
-    public  List<SimpleStringProperty> getCategories(){
+    public  ObservableList<SimpleStringProperty> getCategories(){
         return categories;
     }
     

@@ -9,7 +9,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
-
+import manager.ItemManager;
+import manager.CategoryTracker;
+import manager.util.DataManager;
 
 public class HomeController implements Initializable {
 
@@ -23,6 +25,12 @@ public class HomeController implements Initializable {
         
         try{
             product = FXMLLoader.load(getClass().getResource("/productView/Product.fxml"));
+            
+            //preload data in another thread
+            new Thread(()-> ItemManager.getInstance()).start();
+            new Thread(()-> DataManager.getInstance()).start();
+            new Thread(()-> CategoryTracker.getInstance()).start();
+            
         }catch(Exception e){
             e.printStackTrace();
         }

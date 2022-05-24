@@ -95,24 +95,22 @@ public class ProdutController implements Initializable {
 
         
         search.setOnAction(args->{
-            
             String query = search.getText();
-            
+             table.scrollTo(0);
              filter.setPredicate(item -> Matcher.checkRelevance(item,query));            
              table.setItems(filter);
         });
         
         //setup table;
         table.setItems(FXCollections.observableList(itemManager.getItems()));
-        
-        //setup categories
-        categoryBox.setItems(FXCollections.observableList(categoryManager.getCategories()));
-        
+
+
+        categoryBox.setItems(categoryManager.getCategories());
+
         //setup category actions
         categoryBox.setOnAction(args->{
             if(categoryBox.getSelectionModel().getSelectedItem() != null){
                 viewByCategory(categoryBox.getSelectionModel().getSelectedItem().toString());
-                System.out.println("Click: "+categoryBox.getSelectionModel().getSelectedItem());
             }
         });
         
@@ -153,6 +151,7 @@ public class ProdutController implements Initializable {
     
     //return items base on a category
     private void viewByCategory(String category) {
+        table.scrollTo(0);
         filter.setPredicate(item -> item.getCategory().equals(category));
         table.setItems(filter);
     }
@@ -184,10 +183,8 @@ public class ProdutController implements Initializable {
     }
 
     public void filter(ActionEvent e) {
+       table.scrollTo(0);
        filterController.show(table);
-      
-//      filter.setPredicate(item -> item.getBrand().equalsIgnoreCase("SD"));
-//      table.setItems(filter);
     }
     
     

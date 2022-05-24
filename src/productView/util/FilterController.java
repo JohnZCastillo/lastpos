@@ -94,68 +94,22 @@ public class FilterController implements Initializable {
 //            table.refresh();
 //        });
 
-        
-//selected.setOnEditStart(args -> System.out.println("Sgtart"));
-//selected.setOnEditCommit(args -> System.out.println("commit"));
-//selected.setOnEditCancel(args -> System.out.println("cnedl"));
-         
-//        selected.setCellFactory(new Callback<TableColumn<Brand, Boolean>, TableCell<Brand, Boolean>>() {
-//            @Override
-//            public TableCell<Brand, Boolean> call(TableColumn<Brand, Boolean> param) {
-//                return new CheckBoxTableCell<Brand, Boolean>() {
-//                    {
-//                        setAlignment(Pos.CENTER);
-//                    }
-//
-//                    @Override
-//                    public void updateItem(Boolean item, boolean empty) {
-//                        if (!empty) {
-//                            TableRow row = getTableRow();
-//
-//                            if (row != null) {
-//                                int rowNo = row.getIndex();
-//                                TableViewSelectionModel sm = getTableView().getSelectionModel();
-//
-//                                if (item) {
-//                                    sm.select(rowNo);
-//                                } else {
-//                                    sm.clearSelection(rowNo);
-//                                }
-//                            }
-//                        }
-//
-//                        super.updateItem(item, empty);
-//                    }
-//                };
-//            }
-//        });
-        
-
 
       
-//        
-//        table.setEditable(true);
-//        
-//        search.setOnAction(args->{
-//            
-//           
-//            for(var brand: table.getItems()){
-//                if(brand.getName().equalsIgnoreCase(search.getText())){
-//                    
-//                    
-//                    table.getSelectionModel().clearSelection();
-//                    table.scrollTo(brand);
-//                    table.getSelectionModel().select(brand);
-////                    ensureVisible(table,brand);
-//                    search.setText("");
-//                    showErroMessage(false,"Brand not found!");
-//                    return;
-//                }
-//            }
-//           showErroMessage(true,"Brand not found!");
-//        });
-//        
-//        brandControl = new ArrayList<>();
+        search.setOnAction(args->{
+            for(var brand: view.getItems()){
+                if(brand.getName().equalsIgnoreCase(search.getText())){
+                    view.getSelectionModel().clearSelection();
+                    view.scrollTo(brand);
+                    view.getSelectionModel().select(brand);
+                    search.setText("");
+                    showErroMessage(false,"Brand not found!");
+                    return;
+                }
+            }
+           showErroMessage(true,"Brand not found!");
+        });
+        
     }    
     
     public void show(TableView<Item>tableView){

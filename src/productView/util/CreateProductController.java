@@ -9,6 +9,7 @@ import item.Item;
 import item.Product;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
@@ -111,7 +112,7 @@ public class CreateProductController implements Initializable {
                 
                 ItemManager.getInstance().addItem(product);
                 
-                CategoryTracker.getInstance().add(product.getBrand());
+                CategoryTracker.getInstance().add(product.getCategory());
                         
                 return product;
             }
@@ -145,8 +146,6 @@ public class CreateProductController implements Initializable {
         Format.clear(sku);
         Format.clear(brand);
         Format.clear(category);
-        Format.clear(category.getEditor());
-        Format.clear(brand.getEditor());
     }
   
     private boolean notValid() {
@@ -167,10 +166,8 @@ public class CreateProductController implements Initializable {
     }
     
     private void setComboBox(){
-        brand.getItems().clear();
-        category.getItems().clear();
-        brand.getItems().addAll(DataManager.getInstance().getBrandManager().getList());
-        category.getItems().addAll(DataManager.getInstance().getCategoryManager().getList());
+        brand.setItems(FXCollections.observableArrayList(DataManager.getInstance().getBrandManager().getList()));
+        category.setItems(CategoryTracker.getInstance().getCategories());
     }
     
     public boolean barcodeIsUsed(String barcode){
