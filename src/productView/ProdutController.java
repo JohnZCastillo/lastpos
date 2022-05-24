@@ -33,7 +33,8 @@ import productView.util.CreateProductController;
 import productView.util.FilterController;
 import excel.ExcelReader;
 import java.util.ArrayList;
-import javafx.scene.control.cell.ComboBoxTableCell;
+import javafx.application.Platform;
+import javafx.scene.input.KeyCode;
 import javafx.util.converter.DoubleStringConverter;
 import org.apache.poi.ss.usermodel.Row;
 import manager.util.DataManager;
@@ -62,6 +63,24 @@ public class ProdutController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        table.setOnKeyPressed(args -> {
+            if (args.getCode() == KeyCode.DELETE) {
+                Item item = getSelectedItem();
+                if (!Popup.ask("Are You Sure You Want To Delete Product " + item.getName() + " ?")) {
+                    return;
+                }
+                try {
+                    itemManager.removeItem(item);
+                    Platform.runLater(()-> Popup.message("Product Delete!"));
+                } catch (Exception e) {
+                    Popup.error("Product Deletion Failed!");
+                }
+
+            }
+        });
+        
+        
         //numbering
         no.setSortable(false);
         no.setCellValueFactory(column -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(column.getValue()) + 1));
@@ -102,6 +121,7 @@ public class ProdutController implements Initializable {
             
         });
 
+        
      
         
         price.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
@@ -166,7 +186,7 @@ public class ProdutController implements Initializable {
         brand.setCellFactory(TextFieldTableCell.forTableColumn());
         brand.setOnEditCommit(args -> {
 
-             if (!Popup.ask("Are You Sure You Want' To Edit Brand?")) {
+             if (!Popup.ask("Are You Sure You Wan't To Edit Brand?")) {
                 return;
             }
              
@@ -293,6 +313,7 @@ public class ProdutController implements Initializable {
         };
 
         task.setOnSucceeded(args -> {
+            categoryBox.getSelectionModel().clearSelection();
             table.scrollTo(0);
             table.setItems(FXCollections.observableList(task.getValue()));
         });

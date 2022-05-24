@@ -86,4 +86,9 @@ public class ItemManager {
             barcode.put(item.getBarcode(), item.getBarcode());
         });
     }
+    
+    public void removeItem(Item item)throws Exception{
+        db.deleteProduct(item);
+        getItems().remove(item);
+    }
 }
