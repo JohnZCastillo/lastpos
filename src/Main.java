@@ -5,6 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import manager.CategoryTracker;
+import manager.ItemManager;
+import manager.util.DataManager;
 
 
 public class Main extends Application {
@@ -13,6 +16,11 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
 
         try {
+            
+            //preload data in another thread
+            new Thread(()-> ItemManager.getInstance()).start();
+            new Thread(()-> DataManager.getInstance()).start();
+            new Thread(()-> CategoryTracker.getInstance()).start();
             
             Parent root =  FXMLLoader.load(getClass().getResource("/home/Home.fxml"));
             Scene scene = new Scene(root,300,250);

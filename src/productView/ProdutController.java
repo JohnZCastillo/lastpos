@@ -33,6 +33,8 @@ import productView.util.CreateProductController;
 import productView.util.FilterController;
 import excel.ExcelReader;
 import java.util.ArrayList;
+import javafx.scene.control.cell.ComboBoxTableCell;
+import javafx.util.converter.DoubleStringConverter;
 import org.apache.poi.ss.usermodel.Row;
 import manager.util.DataManager;
 import manager.util.BrandManager;
@@ -43,7 +45,8 @@ public class ProdutController implements Initializable {
 
     @FXML private TableView<Item>table;
     @FXML private TableColumn<Item, String> name,description,brand,category,sku,barcode;
-    @FXML private TableColumn<Item, Number> price,cost,no;
+    @FXML private TableColumn<Item, Integer> no;
+    @FXML private TableColumn<Item, Double> price,cost;
     @FXML private ComboBox categoryBox;
     @FXML private TextField search;
     @FXML private Button viewAll;
@@ -59,7 +62,6 @@ public class ProdutController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
         //numbering
         no.setSortable(false);
         no.setCellValueFactory(column -> new ReadOnlyObjectWrapper<>(table.getItems().indexOf(column.getValue()) + 1));
@@ -71,13 +73,20 @@ public class ProdutController implements Initializable {
         category.setCellValueFactory(column-> ((Product)column.getValue()).category());
         sku.setCellValueFactory(column-> ((Product)column.getValue()).sku());
         barcode.setCellValueFactory(column-> ((Product)column.getValue()).barcode());
-        price.setCellValueFactory(column-> ((Product)column.getValue()).sellingPrice());
-        cost.setCellValueFactory(column-> ((Product)column.getValue()).purchaseCost());
+        price.setCellValueFactory(column-> ((Product)column.getValue()).sellingPrice().asObject());
+        cost.setCellValueFactory(column-> ((Product)column.getValue()).purchaseCost().asObject());
+        
+        
+        setDescriptionEditable();
         
         //make columns editable
         name.setCellFactory(TextFieldTableCell.forTableColumn());
         name.setOnEditCommit(args->{
 
+            if(!Popup.ask("Are You Sure You Want' To Edit Name?")){
+               return;
+           }
+             
             String value = args.getOldValue();
             
             Item item = getSelectedItem();
@@ -93,6 +102,133 @@ public class ProdutController implements Initializable {
             
         });
 
+     
+        
+        price.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        price.setOnEditCommit(args -> {
+            
+            if (!Popup.ask("Are You Sure You Want' To Edit Sellling Price?")) {
+                return;
+            }
+            
+            try {
+
+                double oldValue = args.getOldValue();
+                
+                Item item = getSelectedItem();
+                item.setSellingPrice(args.getNewValue());
+                
+                if (!itemManager.updateItem(item)) {
+                    item.setSellingPrice(oldValue);
+                    Popup.error("Error Updating Selling Price!");
+                    return;
+                }
+                
+                Popup.message("Selling Price Updated!");
+                
+            } catch (Exception e) {
+                Popup.warning("Please Only Input Digits!");
+                e.printStackTrace();
+            }
+        });
+        
+        
+        
+        cost.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+        cost.setOnEditCommit(args -> {
+            
+            if (!Popup.ask("Are You Sure You Want' To Edit Purchase Price?")) {
+                return;
+            }
+            
+            try {
+
+                double oldValue = args.getOldValue();
+                
+                Item item = getSelectedItem();
+                item.setPurchaseCost(args.getNewValue());
+                
+                if (!itemManager.updateItem(item)) {
+                    item.setPurchaseCost(oldValue);
+                    Popup.error("Error Updating Purchase Cost!");
+                    return;
+                }
+                
+                Popup.message("Purchase Cost Updated!");
+                
+            } catch (Exception e) {
+                Popup.warning("Please Only Input Digits!");
+                e.printStackTrace();
+            }
+        });
+        
+        
+        brand.setCellFactory(TextFieldTableCell.forTableColumn());
+        brand.setOnEditCommit(args -> {
+
+             if (!Popup.ask("Are You Sure You Want' To Edit Brand?")) {
+                return;
+            }
+             
+            String value = args.getOldValue();
+
+            Item item = getSelectedItem();
+            item.setBrand(args.getNewValue());
+            
+            if(!DataManager.getInstance().getBrandManager().inList(item.getBrand())){
+                try{
+                     DataManager.getInstance().getBrandManager().addToList(item.getBrand());
+                }catch(Exception e){
+                    e.printStackTrace();
+                    Popup.error("Erro Updating Brand");
+                    return;
+                }
+            }
+            
+            if (!itemManager.updateItem(item)) {
+                item.setBrand(value);
+                Popup.error("Error Updating Brand!");
+                return;
+            }
+
+            Popup.message("Brand Updated!");
+
+        });
+
+      
+        category.setCellFactory(TextFieldTableCell.forTableColumn());
+        category.setOnEditCommit(args -> {
+
+             if (!Popup.ask("Are You Sure You Want' To Edit Category Price?")) {
+                return;
+            }
+             
+            String value = args.getOldValue();
+
+            Item item = getSelectedItem();
+            item.setCategory(args.getNewValue());
+            
+            if(!categoryManager.inList(item.getCategory())){
+                try{
+                   DataManager.getInstance().getCategoryManager().addToList(item.getCategory());
+                   categoryManager.add(item.getCategory());
+                }catch(Exception e){
+                    e.printStackTrace();
+                    Popup.error("Error Updating Category");
+                    return;
+                }
+            }
+            
+            if (!itemManager.updateItem(item)) {
+                item.setCategory(value);
+                Popup.error("Error Updating Category!");
+                return;
+            }
+
+            Popup.message("Category Updated!");
+
+        });
+        
         
         search.setOnAction(args->{
             String query = search.getText();
@@ -117,18 +253,6 @@ public class ProdutController implements Initializable {
         
         //prevent from lagging
         categoryBox.getProperties().put("comboBoxRowsToMeasureWidth", 10);
-        
-        
-        //make description wraps text
-        description.setCellFactory(tc -> {
-            TableCell<Item, String> cell = new TableCell<>();
-            Text text = new Text();
-            cell.setGraphic(text);
-            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
-            text.wrappingWidthProperty().bind(cell.widthProperty());
-            text.textProperty().bind(cell.itemProperty());
-            return cell;
-        });
         
         //make view All actione
         viewAll.setOnAction(args -> viewAll());
@@ -187,7 +311,8 @@ public class ProdutController implements Initializable {
        filterController.show(table);
     }
     
-    
+   
+            
     public void importFile(ActionEvent e){
        
         Optional<File> file = fileManager.chooseFile();
@@ -266,6 +391,44 @@ public class ProdutController implements Initializable {
         task.setOnFailed(args -> Popup.error("File Can't Be Read!"));
         
         new Thread(task).start();
+        
+    }
+    
+    private void setDescriptionEditable() {
+        description.setCellFactory(TextFieldTableCell.forTableColumn());
+        description.setOnEditCommit(args -> {
+
+            if (!Popup.ask("Are You Sure You Want' To Edit Description?")) {
+                return;
+            }
+
+            String value = args.getOldValue();
+
+            Item item = getSelectedItem();
+            item.setDescription(args.getNewValue());
+
+            if (!itemManager.updateItem(item)) {
+                item.setDescription(value);
+                Popup.error("Error Updating Description!");
+                return;
+            }
+
+            Popup.message("Description Updated!");
+
+        });
+    }
+    
+    public void setDescriptionWrap(){
+     //make description wraps text
+        description.setCellFactory(tc -> {
+            TableCell<Item, String> cell = new TableCell<>();
+            Text text = new Text();
+            cell.setGraphic(text);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.wrappingWidthProperty().bind(cell.widthProperty());
+            text.textProperty().bind(cell.itemProperty());
+            return cell;
+        });
         
     }
     

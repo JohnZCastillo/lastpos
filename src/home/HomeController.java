@@ -26,10 +26,7 @@ public class HomeController implements Initializable {
         try{
             product = FXMLLoader.load(getClass().getResource("/productView/Product.fxml"));
             
-            //preload data in another thread
-            new Thread(()-> ItemManager.getInstance()).start();
-            new Thread(()-> DataManager.getInstance()).start();
-            new Thread(()-> CategoryTracker.getInstance()).start();
+        
             
         }catch(Exception e){
             e.printStackTrace();
