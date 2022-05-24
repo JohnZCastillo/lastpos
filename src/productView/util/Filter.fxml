@@ -3,16 +3,19 @@
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.DialogPane?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<DialogPane fx:id="dialogPane" headerText="Filter" minHeight="-Infinity" minWidth="-Infinity" prefHeight="512.0" prefWidth="771.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.FilterController">
+<DialogPane fx:id="dialogPane" headerText="Filter" minHeight="-Infinity" minWidth="-Infinity" prefHeight="512.0" prefWidth="771.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="productView.util.FilterController">
+   <buttonTypes>
+      <ButtonType fx:constant="OK" />
+      <ButtonType fx:constant="CANCEL" />
+   </buttonTypes>
    <content>
       <GridPane hgap="5.0" prefHeight="338.0" prefWidth="405.0" vgap="5.0">
         <columnConstraints>
@@ -39,19 +42,8 @@
                </children>
             </HBox>
             <Label fx:id="error" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" textFill="RED" />
-            <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
-              <columns>
-                  <TableColumn fx:id="selected" prefWidth="75.0" text="BRANDS" />
-              </columns>
-               <columnResizePolicy>
-                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-            </TableView>
+            <ListView fx:id="view" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
          </children>
       </GridPane>
    </content>
-   <buttonTypes>
-      <ButtonType fx:constant="OK" />
-      <ButtonType fx:constant="CANCEL" />
-   </buttonTypes>
 </DialogPane>

@@ -9,7 +9,6 @@ import item.Item;
 import item.Product;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ButtonType;
@@ -22,6 +21,7 @@ import javafx.scene.control.skin.ComboBoxListViewSkin;
 import util.Format;
 import manager.util.DataManager;
 import manager.ItemManager;
+import manager.CategoryTracker;
 import popup.Popup;
 
 public class CreateProductController implements Initializable {
@@ -111,6 +111,8 @@ public class CreateProductController implements Initializable {
                 
                 ItemManager.getInstance().addItem(product);
                 
+                CategoryTracker.getInstance().add(product.getBrand());
+                        
                 return product;
             }
         
@@ -143,6 +145,8 @@ public class CreateProductController implements Initializable {
         Format.clear(sku);
         Format.clear(brand);
         Format.clear(category);
+        Format.clear(category.getEditor());
+        Format.clear(brand.getEditor());
     }
   
     private boolean notValid() {

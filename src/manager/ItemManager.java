@@ -77,4 +77,13 @@ public class ItemManager {
     public boolean isNamePresent(String name){
         return this.name.containsKey(name);
     }
+    
+    public void addAll(List<Item> items) throws Exception {
+        db.addBatchProduct(items);
+        getItems().addAll(items);
+        items.stream().forEach(item -> {
+            name.put(item.getName(), item.getName());
+            barcode.put(item.getBarcode(), item.getBarcode());
+        });
+    }
 }

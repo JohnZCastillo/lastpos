@@ -2,7 +2,6 @@ package manager.util;
 
 import db.tables.SimpleDb;
 import db.tables.CategoryDb;
-import manager.CategoryTracker;
 
 public class CategoryManager extends BrandManager{
 
@@ -22,6 +21,5 @@ public class CategoryManager extends BrandManager{
         if(inList(brand)) return;
         db.add(brand);
         getList().add(brand);
-        CategoryTracker.getInstance().add(brand);
     }
 }

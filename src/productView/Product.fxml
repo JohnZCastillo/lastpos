@@ -34,8 +34,8 @@
             <ComboBox fx:id="categoryBox" prefWidth="150.0" />
             <Button fx:id="viewAll" mnemonicParsing="false" text="View All" />
             <Button mnemonicParsing="false" onAction="#addProduct" text="Add" />
-            <Button mnemonicParsing="false" text="Filter" />
-            <Button mnemonicParsing="false" text="Import" />
+            <Button mnemonicParsing="false" onAction="#filter" text="Filter" />
+            <Button mnemonicParsing="false" onAction="#importFile" text="Import" />
             <Button mnemonicParsing="false" text="Export" />
          </children>
       </HBox>

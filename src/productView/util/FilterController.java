@@ -1,14 +1,10 @@
 package productView.util;
 
-import gui.popup.Popup;
+import popup.Popup;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import static java.util.stream.Collectors.toCollection;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -23,13 +19,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.util.Callback;
-import product.Product;
-import work.Employer;
+import item.Item;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.transformation.FilteredList;
+import javafx.scene.control.ListView;
+import javafx.scene.control.cell.CheckBoxListCell;
+
 
 
 public class FilterController implements Initializable {
@@ -37,18 +40,18 @@ public class FilterController implements Initializable {
    @FXML private RadioButton select,unselect;
    @FXML private TextField min,max,search;
 
-   @FXML private TableView<Brand> table;
-   @FXML private TableColumn<Brand,Boolean>selected;
-   
+   @FXML ListView <Brand>view;
+           
    @FXML private Label error;
 
-   //for conrolling duplicate brnds
-   private List<String> brandControl;
-   
    @FXML private DialogPane dialogPane;
    
+   private FilteredList<Item> filter;
+           
    private Dialog dialog;
    private ToggleGroup group;
+   
+   final private Map<String,Boolean> duplicate = new HashMap<>();
    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -61,17 +64,24 @@ public class FilterController implements Initializable {
         unselect.setToggleGroup(group);
         
         
-        selected.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue().isSelect()));
+       
+        view.setCellFactory(CheckBoxListCell.forListView(brand -> {
+            return brand.getSelect();
+        }));
         
-        selected.setEditable( true );
-
-        selected.setCellFactory(new Callback<TableColumn<Brand, Boolean>, TableCell<Brand, Boolean>>() {
-
-            @Override
-            public TableCell<Brand, Boolean> call(TableColumn<Brand, Boolean> col) {
-                return new Select();
-            }
-        });
+      
+        
+        
+//        
+//        selected.setEditable( true );
+//
+//        selected.setCellFactory(new Callback<TableColumn<Brand, Boolean>, TableCell<Brand, Boolean>>() {
+//
+//            @Override
+//            public TableCell<Brand, Boolean> call(TableColumn<Brand, Boolean> col) {
+//                return new Select();
+//            }
+//        });
 
         
         
@@ -123,75 +133,76 @@ public class FilterController implements Initializable {
 
 
       
-        
-        table.setEditable(true);
-        
-        search.setOnAction(args->{
-            
-           
-            for(var brand: table.getItems()){
-                if(brand.getName().equalsIgnoreCase(search.getText())){
-                    
-                    
-                    table.getSelectionModel().clearSelection();
-                    table.scrollTo(brand);
-                    table.getSelectionModel().select(brand);
-//                    ensureVisible(table,brand);
-                    search.setText("");
-                    showErroMessage(false,"Brand not found!");
-                    return;
-                }
-            }
-           showErroMessage(true,"Brand not found!");
-        });
-        
-        brandControl = new ArrayList<>();
+//        
+//        table.setEditable(true);
+//        
+//        search.setOnAction(args->{
+//            
+//           
+//            for(var brand: table.getItems()){
+//                if(brand.getName().equalsIgnoreCase(search.getText())){
+//                    
+//                    
+//                    table.getSelectionModel().clearSelection();
+//                    table.scrollTo(brand);
+//                    table.getSelectionModel().select(brand);
+////                    ensureVisible(table,brand);
+//                    search.setText("");
+//                    showErroMessage(false,"Brand not found!");
+//                    return;
+//                }
+//            }
+//           showErroMessage(true,"Brand not found!");
+//        });
+//        
+//        brandControl = new ArrayList<>();
     }    
     
-    public void show(TableView<Product>tableView){
+    public void show(TableView<Item>tableView){
         clearField();
+        duplicate.clear();
+        
+        filter = new FilteredList<>(tableView.getItems());
+        
         setBrands(tableView);
+
+                
         if(dialog.showAndWait().get() == ButtonType.OK){
            startFiltering(tableView);
         }
     }
 
-    private void startFiltering(TableView<Product> tableView) {
-        
-        Task<List<Product>> task = new Task() {
+    private void startFiltering(TableView<Item> tableView) {
+
+        Task<Void> task = new Task() {
             @Override
-            protected Object call() throws Exception {
+            protected Void call() throws Exception {
                 updateMessage("Filtering Items");
-                List<Product> list = tableView.getItems()
-                        .stream()
-                        .filter(product -> filterBrand(product))
-                        .filter(product -> filterPrice(product))
-                        .collect(toCollection(ArrayList::new));
-             updateMessage("Filtering Done..");
-             return list;
+                setup();
+                filter.setPredicate(item -> filterBrand(item) && filterPrice(item));
+                updateMessage("Filtering Done..");
+                return null;
             }
         };
-        
+
         task.setOnSucceeded(arg -> {
             Platform.runLater(() -> {
-                tableView.getItems().clear();
-                tableView.getItems().addAll(task.getValue());
+                tableView.setItems(filter);
                 Popup.message("Filtered!");
             });
 
         });
 
         task.setOnFailed(arg -> Popup.error("Error In Filtering Products"));
-        Employer.getInstance().addWork(task);
         new Thread(task).start();
     }
 
-    private boolean filterPrice(Product product) {
+    private boolean filterPrice(Item item) {
         try {
             double maximum = max.getText().isBlank() ? Double.MAX_VALUE : Double.parseDouble(max.getText());
             double minimum = min.getText().isBlank() ? 0 : Double.parseDouble(min.getText());
 
-            return product.getSellingPrice() >= minimum && product.getSellingPrice() <= maximum;
+            return item.getSellingPrice() >= minimum && item.getSellingPrice() <= maximum;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -200,81 +211,45 @@ public class FilterController implements Initializable {
         return false;
     }
     
-    private boolean filterBrand(Product product) {
-        for (var brand : table.getItems()) {
-            if (brand.isSelect()) {
-                if (brand.getName().equals(product.getBrand())) {
-                    return false;
-                }
-            }
-
-        }
-
-        return true;
+    private boolean filterBrand(Item item) {
+        return duplicate.get(item.getBrand());
     }
-
-//    private void select(boolean status) {
-//        for (var brand : brands) {
-//            brand.setSelected(status);
-//        }
-//    }
     
     private void selections(boolean status){
-        table.getItems().forEach(brand -> brand.setSelect(status));
-        table.refresh();
+        view.getItems().forEach(brand -> brand.setSelect(status));
+        view.refresh();
     }
     
-    private void setBrands(TableView<Product> tableView) {
-        
-       
-        table.getItems().clear();
+    private void setBrands(TableView<Item> tableView) {
+
+        view.setItems(null);
         error.setStyle("-fx-text-fill: black");
         error.setText("Processing Brands Please Wait....");
-        
-        List<Product> products = tableView.getItems();
         
         Task<List<Brand>>task = new Task(){
             @Override
             protected Object call() throws Exception {
-               
-               List<Brand> brand = new ArrayList<>();
-             
-               for(var product: products){
-                   Brand tempBrand = new Brand(product.getBrand(),false);
-                   if(!brand.contains(tempBrand)){
-                      brand.add(tempBrand);
-                   }
-               }
-               
-//                products.forEach(product -> {
-//                    if (!brandControl.contains(product.getBrand())) {
-//                        brands.add(new CheckBox(product.getBrand()));
-//                        brandControl.add(product.getBrand());
-//                    }
-//                });
-//    
-//                throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-return brand;
+                return tableView.getItems()
+                        .stream()
+                        .filter(item -> {
+                            if (!duplicate.containsKey(item.getBrand())) {
+                                duplicate.put(item.getBrand(),false);
+                                return true;
+                            }
+                            return false;
+                        })
+                        .map(item -> new Brand(item.getBrand(), false))
+                        .collect(Collectors.toList());
             }
-        
         };
         
         task.setOnSucceeded(args ->{
-            table.getItems().addAll(task.getValue());
-            error.setText("");
+            view.setItems(FXCollections.observableArrayList(task.getValue()));
+             error.setText("");
              error.setStyle("-fx-text-fill: red");
         });
         
         new Thread(task).start();
-        
-//        tableView.getItems().forEach(product -> {
-//            if (!brandControl.contains(product.getBrand())) {
-//                brands.add(new CheckBox(product.getBrand()));
-//                brandControl.add(product.getBrand());
-//            }
-//        });
-//        
-//        brands.forEach(brand -> content.getChildren().add(brand));
     }
     
     private void ensureVisible(ScrollPane scrollPane, Node node) {
@@ -308,22 +283,35 @@ return brand;
         error.setText("");
     }
     
-    static class Brand {
+    private void setup(){
+        view.getItems().forEach(brand -> {
+            if(duplicate.containsKey(brand.getName())){
+                    duplicate.put(brand.getName(),brand.isSelect());
+            }
+        });
+        
+    }
+        
+    class Brand {
 
-        private boolean select;
+        final private SimpleBooleanProperty select = new SimpleBooleanProperty();
         private String name;
 
         public Brand(String name, boolean select) {
             this.name = name;
-            this.select = select;
+            this.select.setValue(select);
+        }
+        
+        public boolean isSelect() {
+            return this.select.get();
         }
 
-        public boolean isSelect() {
+        public SimpleBooleanProperty getSelect() {
             return select;
         }
 
         public void setSelect(boolean select) {
-            this.select = select;
+            this.select.set(select);
         }
 
         public String getName() {
@@ -358,6 +346,12 @@ return brand;
             return Objects.equals(this.name, other.name);
         }
 
+        @Override
+        public String toString() {
+            return name;
+        }
+
+
     }
 
     class Select extends TableCell<Brand, Boolean> {
@@ -366,7 +360,6 @@ return brand;
 
         public Select() {
             box.setOnAction(new EventHandler<ActionEvent>() {
-
                 @Override
                 public void handle(ActionEvent e) {
                   getTableView().getItems().get(getIndex()).setSelect(box.isSelected());

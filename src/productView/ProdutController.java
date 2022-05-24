@@ -1,12 +1,13 @@
 package productView;
 
+import file.FileManager;
 import item.Item;
 import item.Product;
+import java.io.File;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
@@ -17,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -28,6 +30,14 @@ import manager.ItemManager;
 import popup.Popup;
 import util.Matcher;
 import productView.util.CreateProductController;
+import productView.util.FilterController;
+import excel.ExcelReader;
+import java.util.ArrayList;
+import org.apache.poi.ss.usermodel.Row;
+import manager.util.DataManager;
+import manager.util.BrandManager;
+import manager.util.CategoryManager;
+import manager.util.SkuManager;
 
 public class ProdutController implements Initializable {
 
@@ -39,11 +49,14 @@ public class ProdutController implements Initializable {
     @FXML private Button viewAll;
     
     private CreateProductController createProduct;
+    private FilterController filterController;
     
     final private ItemManager itemManager = ItemManager.getInstance();
     final private CategoryTracker categoryManager = CategoryTracker.getInstance();
     final private FilteredList<Item> filter = new FilteredList<>(FXCollections.observableList(itemManager.getItems()));
 
+    final private FileManager fileManager = new FileManager();
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
@@ -82,7 +95,10 @@ public class ProdutController implements Initializable {
 
         
         search.setOnAction(args->{
-             filter.setPredicate(item -> Matcher.checkRelevance(item, search.getText()));
+            
+            String query = search.getText();
+            
+             filter.setPredicate(item -> Matcher.checkRelevance(item,query));            
              table.setItems(filter);
         });
         
@@ -96,23 +112,21 @@ public class ProdutController implements Initializable {
         categoryBox.setOnAction(args->{
             if(categoryBox.getSelectionModel().getSelectedItem() != null){
                 viewByCategory(categoryBox.getSelectionModel().getSelectedItem().toString());
+                System.out.println("Click: "+categoryBox.getSelectionModel().getSelectedItem());
             }
         });
         
-        //setup search
-//        search.setOnAction(args -> search());
         
         //prevent from lagging
         categoryBox.getProperties().put("comboBoxRowsToMeasureWidth", 10);
         
-        table.getProperties().put("TableViewToMeasureWidth", 10);
         
         //make description wraps text
         description.setCellFactory(tc -> {
             TableCell<Item, String> cell = new TableCell<>();
             Text text = new Text();
             cell.setGraphic(text);
-//            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
             text.wrappingWidthProperty().bind(cell.widthProperty());
             text.textProperty().bind(cell.itemProperty());
             return cell;
@@ -123,8 +137,14 @@ public class ProdutController implements Initializable {
         
         try{
             FXMLLoader createProductLoader = new FXMLLoader(getClass().getResource("/productView/util/CreateProduct.fxml"));
+            FXMLLoader filterControllerLoader = new FXMLLoader(getClass().getResource("/productView/util/Filter.fxml"));
+            
             createProductLoader.load();
+            filterControllerLoader.load();
+            
             createProduct = createProductLoader.getController();
+            filterController = filterControllerLoader.getController();
+            
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -132,94 +152,124 @@ public class ProdutController implements Initializable {
     }    
     
     //return items base on a category
-    private void viewByCategory(String category){
-//        Task<List<Item>>task = new Task(){
-//            @Override
-//            protected List<Item> call() throws Exception {
-//                return itemManager.getItems()
-//                        .stream()
-//                        .filter(item -> item.getCategory().equals(category))
-//                        .collect(Collectors.toList());
-//            }
-//        };
-//        
-//        task.setOnSucceeded(args -> {
-//            
-//            if(task.getValue().isEmpty()){
-//                Popup.warning("Category Is Empty!");
-//                return;
-//            }
-//            table.scrollTo(0);
-//            Platform.runLater(()-> table.setItems(FXCollections.observableList(task.getValue())));
-//        });
-//        
-//        task.setOnFailed(args -> Popup.error("Error Viewing Category"));
-//        new Thread(task).start();
-                
+    private void viewByCategory(String category) {
         filter.setPredicate(item -> item.getCategory().equals(category));
         table.setItems(filter);
-        
     }
-   
-    private Item getSelectedItem(){
+
+    private Item getSelectedItem() {
         return table.getSelectionModel().getSelectedItem();
     }
-    
-    private void search(){
-        
-        Task<List<Item>>task = new Task(){
+
+    private void viewAll() {
+        Task<List<Item>> task = new Task() {
             @Override
             protected List<Item> call() throws Exception {
-                return itemManager.getItems()
-                            .stream()
-                        .filter(item -> Matcher.checkRelevance(item,search.getText()))
-                        .collect(Collectors.toList());
+                return itemManager.getItems();
             }
         };
-        
-        task.setOnSucceeded(args->{
-            
-            search.setText("");
-        
-            if(task.getValue().isEmpty()){
-                Popup.warning("Empty Search Result!");
-                return;
-            }
-            
-            Platform.runLater(()->{
-                table.scrollTo(0);
-                table.setItems(FXCollections.observableList(task.getValue()));
-            });
-            
-        });
-        
-        task.setOnFailed(args->{
-            Popup.error("Something Went Wrong While Searching!");
-        });
-        
-        new Thread(task).start();
-        
-    }
-    
-    private void viewAll(){
-        Task<List<Item>> task = new Task(){
-            @Override
-            protected List<Item> call() throws Exception {
-                    return itemManager.getItems();
-            }
-        };
-        
-        task.setOnSucceeded(args->{
+
+        task.setOnSucceeded(args -> {
             table.scrollTo(0);
             table.setItems(FXCollections.observableList(task.getValue()));
-                });
-        
-        task.setOnFailed(args-> Popup.error("Something Wen't Wrong While Getting Your Products!"));
-        
+        });
+
+        task.setOnFailed(args -> Popup.error("Something Wen't Wrong While Getting Your Products!"));
+
         new Thread(task).start();
     }
-    
-    public void addProduct(ActionEvent e){
+
+    public void addProduct(ActionEvent e) {
         createProduct.show();
     }
+
+    public void filter(ActionEvent e) {
+       filterController.show(table);
+      
+//      filter.setPredicate(item -> item.getBrand().equalsIgnoreCase("SD"));
+//      table.setItems(filter);
+    }
+    
+    
+    public void importFile(ActionEvent e){
+       
+        Optional<File> file = fileManager.chooseFile();
+        
+        if(file.isEmpty()) return;
+        
+        Task<Void> task = new Task(){
+            @Override
+            protected Object call() throws Exception {
+                
+                List<Item> items = new ArrayList<>();
+                
+                new ExcelReader(sheet ->{
+                   
+                    for(Row row: sheet){
+                        //exclude header
+                        if(row.getRowNum() == 0) continue;
+                        
+                        Item item = new Product();    
+                        
+                        item.setName(row.getCell(0).getStringCellValue());
+                        item.setDescription(row.getCell(1).getStringCellValue());
+                        item.setSellingPrice(row.getCell(2).getNumericCellValue());
+                        item.setPurchaseCost(row.getCell(3).getNumericCellValue());
+                        item.setBrand(row.getCell(4).getStringCellValue());
+                        item.setCategory(row.getCell(5).getStringCellValue());
+                        item.setSku(row.getCell(6).getStringCellValue());
+                        item.setBarcode(row.getCell(7).getStringCellValue());
+                        
+                        items.add(item);
+                   }
+               
+                }).read(file.get());
+                
+                final List<String> newSku = new ArrayList<>();
+                final List<String> newCategory = new ArrayList<>();
+                final List<String> newBrand = new ArrayList<>();
+
+                items.forEach(item -> {
+
+                    if (!DataManager.getInstance().getCategoryManager().inList(item.getCategory())) {
+                        if(!newCategory.contains(item.getCategory())){
+                            newCategory.add(item.getCategory());
+                        }
+                    }
+
+                    if (!DataManager.getInstance().getBrandManager().inList(item.getBrand())) {
+                        if(!newBrand.contains(item.getBrand())){
+                             newBrand.add(item.getBrand());
+                        }
+                    }
+
+                    if (!DataManager.getInstance().getSkuManager().inList(item.getSku())) {
+                         if(!newSku.contains(item.getSku())){
+                              newSku.add(item.getSku());
+                        }
+                    }
+
+                });
+                   
+                //save new brand / categories / sku to db
+                ((BrandManager)DataManager.getInstance().getBrandManager()).addBatch(newBrand);
+                ((CategoryManager)DataManager.getInstance().getCategoryManager()).addBatch(newCategory);
+                ((SkuManager)DataManager.getInstance().getSkuManager()).addBatch(newSku);
+                    
+                //track categories
+                manager.CategoryTracker.getInstance().add(newCategory);
+                
+                //save products
+                itemManager.addAll(items);
+                return null;
+            }
+        };
+        
+        task.setOnSucceeded(args -> Popup.message("File Succesfuly Imported!"));
+        task.setOnFailed(args -> Popup.error("File Can't Be Read!"));
+        
+        new Thread(task).start();
+        
+    }
+    
 }

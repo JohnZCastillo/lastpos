@@ -6,12 +6,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import db.tables.SimpleDb;
 import db.tables.CategoryDb;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class CategoryTracker {
     
-    private ObservableList<SimpleStringProperty> categories;
+    private List<SimpleStringProperty> categories;
     private SimpleDb db;
     
     private CategoryTracker() {
@@ -19,15 +20,15 @@ public class CategoryTracker {
         update();
     }
     
-    private void update() {
+     private final void update() {
         
         try {
+            
             categories = FXCollections.observableArrayList(
-                             db.getList()
+                    db.getList()
                             .stream()
                             .map(car -> new Category(car))
-                            .collect(Collectors.toList())
-            );
+                            .collect(Collectors.toList()));
 //            
 //            categories = FXCollections.o(
                    
@@ -57,7 +58,7 @@ public class CategoryTracker {
         private static final CategoryTracker INSTANCE = new CategoryTracker();
     }
     
-    public  ObservableList<SimpleStringProperty> getCategories(){
+    public  List<SimpleStringProperty> getCategories(){
         return categories;
     }
     
@@ -67,6 +68,13 @@ public class CategoryTracker {
     
     public void add(String name){
         getCategories().add(new Category(name));
+    }
+    
+    public void add(List<String> list) {
+        categories.addAll(list
+                .stream()
+                .map(car -> new Category(car))
+                .collect(Collectors.toList()));
     }
 }
 
