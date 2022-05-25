@@ -260,7 +260,12 @@ public class ProdutController implements Initializable {
         search.setOnAction(args -> {
             String query = search.getText();
             table.scrollTo(0);
-            filter.setPredicate(item -> Matcher.checkRelevance(item, query));
+            
+            if(query.startsWith("@")){
+               filter.setPredicate(item -> Matcher.checkIntegrity(item, query.substring(1)));
+            }else{
+                filter.setPredicate(item -> Matcher.checkRelevance(item, query));
+            }
             table.setItems(filter);
             search.setText("");
         });

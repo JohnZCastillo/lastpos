@@ -30,9 +30,6 @@ public class Matcher {
     }
     
    public static boolean checkRelevance(Item item,String text){
-       
-  
-       
         return same(item.getName(),text)|| 
                 same(item.getDescription(),text) ||
                 same(item.getBrand(),text) ||
@@ -41,13 +38,14 @@ public class Matcher {
                 same(item.getSku(),text);
     }
     
-    public static void main(String[] args) {
-        System.out.println("1: "+Matcher.same("daD", "bulad"));
-        System.out.println("2: "+Matcher.same("AD", "bulad"));
-        System.out.println("3: "+Matcher.same("test1", "bulad"));
-        System.out.println("4: "+Matcher.same("castillo", "bulad"));
-        System.out.println("5: "+Matcher.same("123", "bulad"));
-        System.out.println("6: "+Matcher.same("13", "bulad"));
+     public static boolean checkIntegrity(Item item,String text){
+        return item.getName().equalsIgnoreCase(text) ||
+                item.getDescription().equalsIgnoreCase(text) ||
+                item.getBrand().equalsIgnoreCase(text) ||
+                item.getCategory().equalsIgnoreCase(text) ||
+                item.getBarcode().equalsIgnoreCase(text) ||
+                item.getSku().equalsIgnoreCase(text);
     }
-    
+     
+   
 }

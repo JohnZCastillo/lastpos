@@ -61,6 +61,8 @@ public class MyCart extends SimpleCart{
         
         if(status){
             total.set(0);
+            cash.set(0);
+            change.set(0);
             items.clear();
         }
         

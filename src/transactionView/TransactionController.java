@@ -23,7 +23,8 @@ import item.CartItem;
 import javafx.fxml.FXMLLoader;
 import transactionView.util.PaymentController;
 import transactionView.util.VoidController;
-
+import transactionView.util.InquireController;
+import util.Format;
 
 public class TransactionController implements Initializable {
     
@@ -39,6 +40,7 @@ public class TransactionController implements Initializable {
     
     private PaymentController payment;
     private VoidController voider;
+    private InquireController inquire;
     
     final private Cart cart = new MyCart();
     
@@ -68,6 +70,11 @@ public class TransactionController implements Initializable {
             FXMLLoader voidLoader = new FXMLLoader(getClass().getResource("/transactionView/util/VoidPopup.fxml"));
             voidLoader.load();
             voider = voidLoader.getController();
+            
+            FXMLLoader inquireLoader = new FXMLLoader(getClass().getResource("/transactionView/util/InquirePopup.fxml"));
+            inquireLoader.load();
+            inquire = inquireLoader.getController();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,6 +109,8 @@ public class TransactionController implements Initializable {
     @FXML
     private void paymentBtnClick(ActionEvent event) {
         
+        if(checkCart()) return;
+        
         Optional<Double> amount = payment.showDialog(((MyCart)cart).getTotal().get());
         
         if(amount.isEmpty())return;
@@ -109,17 +118,23 @@ public class TransactionController implements Initializable {
         if(!((MyCart)cart).setCash(amount.get())){
             Popup.error("Error Setting Up Payment!");
         }
+        
+        Popup.message("Transaction Completed!");
+        cart.clear();
     }
 
     @FXML
     private void voidBtnClick(ActionEvent event) {
+         
+        if(checkCart()) return;
+
         voider.show(cart);
     }
 
     @FXML
     private void inquireBtnClick(ActionEvent event) {
+        inquire.show();
     }
-    
     
     private void resetQuantity(){
         spinner.getValueFactory().setValue(1);
@@ -129,117 +144,13 @@ public class TransactionController implements Initializable {
         return (int)spinner.getValueFactory().getValue();
     }
     
-    
-//    class CartItem {
-//    
-//        final private Item item;
-//        
-//        final private SimpleIntegerProperty quantity = new SimpleIntegerProperty();
-//        final private SimpleDoubleProperty total = new SimpleDoubleProperty();
-//        
-//        public CartItem(Item item,int quantity){
-//            this.item = item;
-//            setQuantity(quantity);
-//            setTotal(item.getSellingPrice() * quantity);
-//            
-//            ((Product)item).sellingPrice().addListener(arg->{
-//                total.set(item.getSellingPrice() * getQuantity());
-//            });
-//            
-//            this.quantity.addListener(args->{
-//                total.set(item.getSellingPrice() * getQuantity());
-//            });
-//            
-//        }
-//        
-//        
-//        public Item item(){
-//            return item;
-//        }
-//        
-//        public SimpleIntegerProperty quantity(){
-//            return quantity;
-//        }
-//        
-//        public SimpleDoubleProperty total(){
-//            return total;
-//        }
-//        
-//        public int getQuantity(){
-//            return quantity.get();
-//        }
-//        
-//        public void setQuantity(int quantity){
-//            this.quantity.set(quantity);
-//        }
-//        
-//        public void setTotal(double total){
-//                this.total.set(total);
-//        }
-//        
-//        public double getTotal(){
-//            return this.total.get();
-//        }
-//        
-//        public void updateQuantity(int item){
-//            quantity().set(quantity().get() + item);
-//        }
-//    }
-//    
-//    class Cart{
-//    
-//        final private ObservableList<CartItem> cart;
-//        
-//        final private SimpleDoubleProperty total = new SimpleDoubleProperty();
-//        final private SimpleDoubleProperty subtotal = new SimpleDoubleProperty();
-//        final private SimpleDoubleProperty change = new SimpleDoubleProperty();
-//        final private SimpleDoubleProperty cash = new SimpleDoubleProperty();
-//        
-//        public Cart(){
-//            cart = FXCollections.observableArrayList();
-//            
-//            cart.addListener(new ListChangeListener<CartItem>() {
-//                @Override
-//                public void onChanged(Change<? extends CartItem> arg) {
-//                        while(arg.next()){
-//                            total.set(0);
-//                            getCart().forEach(item->{
-//                                total.setValue(total.get() + (item.item.getSellingPrice() * item.getQuantity()));
-//                            });
-//                        }
-//                }
-//            });
-//
-//        }
-//        
-//        public void addToCart(CartItem item){
-//            getCart().add(item);
-//        }
-//        
-//        public void removeFromCart(CartItem item){
-//            getCart().remove(item); 
-//        }
-//        
-//        public ObservableList<CartItem> getCart(){
-//            return cart;
-//        }
-//
-//        public SimpleDoubleProperty getTotal() {
-//            return total;
-//        }
-//
-//        public SimpleDoubleProperty getSubtotal() {
-//            return subtotal;
-//        }
-//
-//        public SimpleDoubleProperty getChange() {
-//            return change;
-//        }
-//
-//        public SimpleDoubleProperty getCash() {
-//            return cash;
-//        }
-//        
-//    }
+    private boolean checkCart(){
+        if(cart.isEmpty()){
+            Popup.warning("Cart Is Empty!");
+            return true;
+        }
+        
+        return false;
+    }
     
 }

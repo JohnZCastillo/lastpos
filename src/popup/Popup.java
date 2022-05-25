@@ -13,21 +13,21 @@ public class Popup {
         alert.setAlertType(AlertType.WARNING);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.show();
+        alert.showAndWait();
     }
 
     public static void message(String message) {
         alert.setAlertType(AlertType.INFORMATION);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.show();
+        alert.showAndWait();
     }
 
     public static void error(String message) {
         alert.setAlertType(AlertType.ERROR);
         alert.setHeaderText(null);
         alert.setContentText(message);
-        alert.show();
+        alert.showAndWait();
     }
     
      public static boolean ask(String message) {
