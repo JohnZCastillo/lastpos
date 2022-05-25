@@ -15,4 +15,7 @@ public interface Cart {
     
     public Map<Item,Integer> getItems();
     
+    public int valueInCart(Item item);
+    
+    public boolean isEmpty();
 }

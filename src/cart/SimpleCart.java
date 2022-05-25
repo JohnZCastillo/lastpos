@@ -68,6 +68,19 @@ public abstract class SimpleCart implements Cart{
         return cart.containsKey(item);
     }
 
+    @Override
+    public int valueInCart(Item item){
+        if(inCart(item)){
+         return cart.get(item);
+        }
+        return 0;
+    }
+    
+    @Override
+    public boolean isEmpty(){
+        return cart.isEmpty();
+    }
+    
     abstract void calculate(Map<Item,Integer>cart);
     
     abstract boolean inventoryControl(Item item,int quantity);

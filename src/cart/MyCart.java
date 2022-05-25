@@ -8,19 +8,47 @@ import javafx.collections.ObservableList;
 import item.CartItem;
 import java.util.ArrayList;
 import java.util.List;
+import util.CurrencyFormat;
 
+        
 public class MyCart extends SimpleCart{
 
     final private SimpleDoubleProperty total = new SimpleDoubleProperty();
+    final private SimpleDoubleProperty cash = new SimpleDoubleProperty();
+    final private SimpleDoubleProperty change = new SimpleDoubleProperty();
+    final private SimpleDoubleProperty discount = new SimpleDoubleProperty();
+    
     private ObservableList<CartItem> items = FXCollections.observableArrayList();
+    
+    public MyCart(){
+        cash.addListener(arg->{
+            if(cash.get() > 0){
+                change.set(CurrencyFormat.roundOff(cash.get() - total.get()));
+                return;
+            }
+           change.set(0);
+        });
+        
+        total.addListener(args -> {
+            if (cash.get() > 0) {
+                change.set(CurrencyFormat.roundOff(cash.get() - total.get()));
+                return;
+            }
+            change.set(0);
+        });
+        
+    }
     
     @Override
     void calculate(Map<Item, Integer> cart) {
+        
         total.set(0);
-        cart.forEach((item,quantity)->total.set(item.getSellingPrice() * quantity));
-        System.out.println("TOTAL: "+total.get());
+        cart.forEach((item,quantity)->{
+            total.set(CurrencyFormat.roundOff(total.get() + (item.getSellingPrice() * quantity)));
+        });
     }
 
+    
     @Override
     boolean inventoryControl(Item item, int quantity) {
         return true;
@@ -33,6 +61,7 @@ public class MyCart extends SimpleCart{
         
         if(status){
             total.set(0);
+            items.clear();
         }
         
         return status;
@@ -42,14 +71,36 @@ public class MyCart extends SimpleCart{
         return total;
     }
 
+    public SimpleDoubleProperty getChange() {
+        return change;
+    }
+    public SimpleDoubleProperty getCash() {
+        return cash;
+    }
+    public SimpleDoubleProperty getDisocunt() {
+        return discount;
+    }
+    
     public ObservableList<CartItem> getList(){
         return items;
+    }
+    
+    public boolean setCash(double cash){
+        if(cash >= total.get()){
+            this.cash.set(cash);
+            return true;
+        }
+        return false;
     }
     
     @Override
     public boolean add(Item item, int quantity){
         boolean status = super.add(item,quantity);
-        items.add(new CartItem(item,quantity));
+        
+        if(status){
+            items.add(new CartItem(item,quantity));
+        }
+        
         return status;
     }
     
@@ -57,25 +108,27 @@ public class MyCart extends SimpleCart{
     public boolean remove(Item item, int quantity){
         
         boolean status = super.remove(item,quantity);
-        
-                    System.out.println("Remvoing");
 
         if(status){
            this.remove(new CartItem(item,quantity));
-            System.out.println("Remvoing");
         }
+        
         return status;
     }
     
     ///remove items quantity in cart 
     //the purpose of this is for gui only
     //not the internal removing beacuase it is done
-    //by the parents
+    //by the parent
     public void remove(CartItem cartItem){
         
         for(CartItem item: getList()){
             if(item.item().getBarcode().equals(cartItem.item().getBarcode())){
                 
+                if( cartItem.getQuantity() <= 0){
+                    break;
+                }
+                    
                 if(item.getQuantity() <= 0){
                     continue;
                 }
@@ -107,4 +160,5 @@ public class MyCart extends SimpleCart{
         
     }
     
+   
 }

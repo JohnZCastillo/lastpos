@@ -2,6 +2,7 @@ package item;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import util.CurrencyFormat;
 
 public class CartItem {
 
@@ -16,11 +17,11 @@ public class CartItem {
         setTotal(item.getSellingPrice() * quantity);
 
         ((Product) item).sellingPrice().addListener(arg -> {
-            total.set(item.getSellingPrice() * getQuantity());
+            total.set(CurrencyFormat.roundOff(item.getSellingPrice() * getQuantity()));
         });
 
         this.quantity.addListener(args -> {
-            total.set(item.getSellingPrice() * getQuantity());
+            total.set(CurrencyFormat.roundOff(item.getSellingPrice() * getQuantity()));
         });
 
     }

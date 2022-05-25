@@ -107,7 +107,5 @@ public class ItemManager {
             return Optional.empty();
         }
     }
-    public static void main(String[] args) {
-        
-    }
+  
 }

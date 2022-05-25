@@ -17,11 +17,13 @@ import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import popup.Popup;
 import cart.MyCart;
 import cart.Cart;
-import javafx.collections.FXCollections;
 import item.Item;
-import java.util.ArrayList;
 import manager.ItemManager;
 import item.CartItem;
+import javafx.fxml.FXMLLoader;
+import transactionView.util.PaymentController;
+import transactionView.util.VoidController;
+
 
 public class TransactionController implements Initializable {
     
@@ -34,6 +36,10 @@ public class TransactionController implements Initializable {
     @FXML private TableColumn<CartItem, Integer> quantityColumn;
     @FXML private Label amountDueLabel,cashLabel,changeLabel;
 
+    
+    private PaymentController payment;
+    private VoidController voider;
+    
     final private Cart cart = new MyCart();
     
     @Override
@@ -51,34 +57,76 @@ public class TransactionController implements Initializable {
         tableView.setItems(((MyCart)cart).getList());
         
         amountDueLabel.textProperty().bind(Bindings.convert(((MyCart)cart).getTotal()));
+        cashLabel.textProperty().bind(Bindings.convert(((MyCart)cart).getCash()));
+        changeLabel.textProperty().bind(Bindings.convert(((MyCart)cart).getChange()));
+        
+        try {
+            FXMLLoader paymentLoader = new FXMLLoader(getClass().getResource("/transactionView/util/PaymentPopup.fxml"));
+            paymentLoader.load();
+            payment = paymentLoader.getController();
+            
+            FXMLLoader voidLoader = new FXMLLoader(getClass().getResource("/transactionView/util/VoidPopup.fxml"));
+            voidLoader.load();
+            voider = voidLoader.getController();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }    
 
     @FXML
     private void barcodeInput(ActionEvent event) {
 
         Optional<Item> item = ItemManager.getInstance().getItem(searchBar.getText());
-        
+
         if (item.isEmpty()) {
             Popup.warning("Product Not Found!");
         } else {
-          cart.add(item.get(), (int)spinner.getValue());
+            
+          if(getQuantity() > 1){
+              if(!Popup.ask("Are You Sure You Want To Input "+getQuantity()+" Products?")){
+                resetQuantity();
+              }
+          }
+            
+          if(!cart.add(item.get(), getQuantity())){
+              Popup.error("Unable To Add Product!");
+          }
+          
+          
         }
 
         searchBar.setText("");
+        resetQuantity();
     }
 
     @FXML
     private void paymentBtnClick(ActionEvent event) {
+        
+        Optional<Double> amount = payment.showDialog(((MyCart)cart).getTotal().get());
+        
+        if(amount.isEmpty())return;
+        
+        if(!((MyCart)cart).setCash(amount.get())){
+            Popup.error("Error Setting Up Payment!");
+        }
     }
 
     @FXML
     private void voidBtnClick(ActionEvent event) {
-        cart.remove(ItemManager.getInstance().getItem("123").get(), 10);
-        System.out.println("Clicked!");
+        voider.show(cart);
     }
 
     @FXML
     private void inquireBtnClick(ActionEvent event) {
+    }
+    
+    
+    private void resetQuantity(){
+        spinner.getValueFactory().setValue(1);
+    }
+    
+    private int getQuantity(){
+        return (int)spinner.getValueFactory().getValue();
     }
     
     
