@@ -8,6 +8,8 @@ import java.util.List;
 import db.item.ProductDb;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ItemManager {
     
@@ -90,5 +92,22 @@ public class ItemManager {
     public void removeItem(Item item)throws Exception{
         db.deleteProduct(item);
         getItems().remove(item);
+    }
+    
+    public Optional<Item> getItem(String barcode){
+        try{
+        return Optional.ofNullable(getItems()
+                .stream()
+                .filter(item -> item.getBarcode().equals(barcode))
+                .limit(1)
+                .collect(Collectors.toList())
+                .get(0)
+                );
+        }catch(Exception e){
+            return Optional.empty();
+        }
+    }
+    public static void main(String[] args) {
+        
     }
 }

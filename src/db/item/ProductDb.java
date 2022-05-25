@@ -1,14 +1,17 @@
 package db.item;
 
+import db.connection.ConnectionManager;
 import db.manager.DbManager;
 import db.manager.Result;
 import db.manager.Setter;
 import item.Item;
 import item.Product;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import util.TimeManager;
-
+import java.sql.ResultSet;
 
 
 public class ProductDb extends DbManager{
@@ -178,5 +181,74 @@ public class ProductDb extends DbManager{
         return retrieve(query,result).get();
     }
      
+    public Item getItem(String barcode) throws Exception {
+
+        String query = "SELECT * FROM PRODUCT WHERE BARCODE = ?";
+
+        Setter setter = stmt -> stmt.setString(1,barcode);
+
+        Result<Item> result = resultSet -> {
+
+            resultSet.next();
+
+            Item item = new Product();
+
+            item.setName(resultSet.getString("name"));
+            item.setDescription(resultSet.getString("description"));
+            item.setSellingPrice(resultSet.getDouble("selling_Price"));
+            item.setPurchaseCost(resultSet.getDouble("purchase_Cost"));
+            item.setBrand(resultSet.getString("brand"));
+            item.setCategory(resultSet.getString("category"));
+            item.setSku(resultSet.getString("sku"));
+            item.setBarcode(resultSet.getString("barcode"));
+            item.setActive(resultSet.getBoolean("active"));
+
+            return item;
+        };
+
+        return retrieve(query,setter,result).get();
+    }
+      
+    
+    public Optional<Item> getDirect(String barcode) {
+
+        ConnectionManager conn = new ConnectionManager();
+        conn.openConnection();
+
+        try {
+
+            String query = "SELECT * FROM PRODUCT WHERE BARCODE = ?";
+
+            PreparedStatement preparedStmt = conn.getConnection().prepareStatement(query);
+
+            preparedStmt.setString(1, barcode);
+
+            ResultSet result = preparedStmt.executeQuery();
+
+            result.next();
+
+            Item item = new Product();
+
+            item.setName(result.getString("name"));
+            item.setDescription(result.getString("description"));
+            item.setSellingPrice(result.getDouble("selling_Price"));
+            item.setPurchaseCost(result.getDouble("purchase_Cost"));
+            item.setBrand(result.getString("brand"));
+            item.setCategory(result.getString("category"));
+            item.setSku(result.getString("sku"));
+            item.setBarcode(result.getString("barcode"));
+            item.setActive(result.getBoolean("active"));
+
+            conn.closeConnection();
+
+            return Optional.of(item);
+
+        } catch (Exception e) {
+            conn.closeConnection();
+            e.printStackTrace();
+            return Optional.empty();
+        }
+
+    }
     
 }

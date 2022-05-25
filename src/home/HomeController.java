@@ -17,6 +17,7 @@ public class HomeController implements Initializable {
 
   
     private Node product;
+    private Node transaction;
     
     @FXML private BorderPane mother;
     
@@ -24,9 +25,9 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         
         try{
-            product = FXMLLoader.load(getClass().getResource("/productView/Product.fxml"));
             
-        
+            product = FXMLLoader.load(getClass().getResource("/productView/Product.fxml"));
+            transaction = FXMLLoader.load(getClass().getResource("/transactionView/Transaction.fxml"));
             
         }catch(Exception e){
             e.printStackTrace();
@@ -37,6 +38,9 @@ public class HomeController implements Initializable {
         mother.setCenter(product);
     }
     
+    public void viewTransaction(ActionEvent e){
+        mother.setCenter(transaction);
+    }
     
     
 }
