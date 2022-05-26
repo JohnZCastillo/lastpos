@@ -8236,3 +8236,36 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/mitch/D
 	at org.h2.mvstore.FileStore.open(FileStore.java:163)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:449)
 	... 22 more
+2022-05-26 21:09:37 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE) IN  [*]2022-5-26?"; expected "("; SQL statement:
+SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE) IN  2022-5-26? [42001-212]
+2022-05-26 21:09:43 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE) IN  [*]2022-5-26"; expected "("; SQL statement:
+SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE) IN  2022-5-26 [42001-212]
+2022-05-26 21:10:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Values of types "DATE" and "INTEGER" are not comparable; SQL statement:
+SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE)  = 2022-5-26 [90110-212]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:632)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.value.TypeInfo.checkComparable(TypeInfo.java:764)
+	at org.h2.expression.condition.Comparison.optimize(Comparison.java:159)
+	at org.h2.expression.Expression.optimizeCondition(Expression.java:148)
+	at org.h2.command.query.Select.prepareExpressions(Select.java:1177)
+	at org.h2.command.query.Query.prepare(Query.java:218)
+	at org.h2.command.Parser.prepareCommand(Parser.java:574)
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:631)
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:554)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:237)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:223)
+	at org.h2.server.web.WebApp.getResult(WebApp.java:1339)
+	at org.h2.server.web.WebApp.query(WebApp.java:1137)
+	at org.h2.server.web.WebApp$1.next(WebApp.java:1103)
+	at org.h2.server.web.WebApp$1.next(WebApp.java:1090)
+	at org.h2.server.web.WebThread.process(WebThread.java:189)
+	at org.h2.server.web.WebThread.run(WebThread.java:102)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+2022-05-26 21:10:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE)  IN [*]'2022-5-26'"; expected "("; SQL statement:
+SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE)  IN '2022-5-26' [42001-212]

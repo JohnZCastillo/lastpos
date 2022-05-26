@@ -49,6 +49,10 @@ public abstract class SimpleCart implements Cart{
         if(quantity > getQuantity(item)) return false;
         
         cart.put(item, getQuantity(item) - quantity);
+        
+        //remove if quantity is zero
+        if(getQuantity(item) == 0) getItems().remove(item);
+        
         calculate(getItems());
         return true;
     }

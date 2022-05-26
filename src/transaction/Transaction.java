@@ -18,11 +18,10 @@ public class Transaction {
     private String cashier;
     private LocalDate date;
     private LocalTime time;
-    
-    private List<CartItem>items;
 
-    
-    public Transaction(MyCart cart,int id) {
+    private List<CartItem> items;
+
+    public Transaction(MyCart cart, int id) {
         this.id = id;
         items = new ArrayList(cart.getList());
         total = cart.getTotal().get();
@@ -49,7 +48,6 @@ public class Transaction {
     public Transaction() {
     }
 
-      
     public int getId() {
         return id;
     }
@@ -142,5 +140,5 @@ public class Transaction {
         final Transaction other = (Transaction) obj;
         return this.id == other.id;
     }
-    
+
 }
