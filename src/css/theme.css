@@ -1,0 +1,241 @@
+/*.root { 
+    -fx-accent: #1e74c6;
+    -fx-focus-color: -fx-accent;
+    -fx-base: #373e43;
+    -fx-control-inner-background: derive(-fx-base, 35%);
+    -fx-control-inner-background-alt: -fx-control-inner-background ;
+    
+    -fx-accent: #2C3438;
+    -fx-focus-color: -fx-accent;
+    -fx-base: #83c5be;
+    -fx-control-inner-background: derive(-fx-base, 35%);
+
+    
+    
+}*/
+/*
+.label{
+    -fx-text-fill: lightgray;
+    -fx-text-fill: #CAD3D9;
+}
+
+.text-field {
+    -fx-prompt-text-fill: gray;
+}
+
+.titulo{
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}
+*/
+.button{
+    -fx-focus-traversable: false;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.btn{
+    -fx-min-width: 70px;
+    -fx-padding: 5px;
+    -fx-text-fill: black;
+    -fx-background-color:white;
+    -fx-background-radius:5px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0.5, 0.0, 0.0);
+}
+
+.btn-header{
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+}
+
+
+.nav{
+    -fx-background-color: #3b434c;
+}
+.nav-button{
+    -fx-text-fill:white;
+}
+.nav-button:hover{
+    background-color: #435C74;
+}
+
+/*
+
+.button:hover{
+    -fx-text-fill: white;
+}
+
+*/.separator *.line { 
+    -fx-background-color: transparent;
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+    
+}/*
+
+*/
+.scroll-bar{
+    -fx-background-color: transparent;
+}
+
+#login{
+/*  -fx-background-image: url("../images/logo.png");
+  -fx-background-size: contain;
+  -fx-background-repeat: no-repeat;
+  -fx-background-position:center;*/
+  -fx-background-color:white; 
+}
+/*
+
+.button:default {
+    -fx-base: -fx-accent ;
+} */
+
+.table-view{
+    -fx-background-color:white;
+    -fx-padding: 10px;
+    -fx-background-radius:10px;
+    -fx-selection-bar-non-focused: transparent;
+    -fx-outline: none;
+}
+.table-view:focus{
+  -fx-outline: none;
+}
+
+.table-row-cell:selected{
+    -fx-background-color:#439E96;
+}
+
+.table-view .column-header{
+    -fx-background-color: white;
+    -fx-padding:5px 0px 5px 0px;
+    -fx-font-size:14px;
+}
+
+.table-view .column-header .label{
+    -fx-font-weight: none;
+    -fx-alignment: CENTER_LEFT;
+    -fx-background-color: transparent;
+    -fx-border-color: black;
+    -fx-border-style: solid;
+    -fx-border-width: 0px 0px 0.5px 0px;
+}
+
+.table-view .column-header-background{
+   
+    -fx-background-color: transparent;
+}
+/*.table-view .column-header-background{
+    -fx-background-color: linear-gradient(#101010 0%, #424141 100%);
+}*/
+
+
+.list-cell:even,
+.list-cell:odd,
+.table-row-cell:even,
+.table-row-cell:odd{    
+    -fx-control-inner-background: white;
+}
+
+.list-cell:empty,
+.table-row-cell:empty {
+    -fx-background-color: white;
+}
+
+.list-cell,
+.table-row-cell{
+    -fx-table-cell-border-color:transparent;
+}
+
+/*
+dialog-pane {
+    -fx-background-color: #242B30;
+    -fx-padding: 0;
+    -fx-font-size: 20px;
+}
+
+.dialog-pane > .expandable-content {
+    -fx-padding: 0.666em;  8px 
+}
+.dialog-pane > .content.label {
+   -fx-padding: 0.5em 0.5em 0.5em 0.5em;
+   -fx-font-size:16px;
+}
+
+.dialog-pane > .button-bar > .container {
+    -fx-padding: 0.833em;  10px 
+}
+  
+ Navigation 
+
+.side_nav{
+    -fx-background-color: #242B30;
+}
+
+.side_nav-btn{
+    -fx-background-color:#242B30;
+    -fx-cursor: hand;
+}
+
+.side_nav-btn:hover{
+        -fx-background-color:#4E565B;
+}
+ transaction display 
+.total-input{
+    -fx-text-fill: #A3E183;
+    -fx-font-size: 20px;
+}
+
+ transact label
+.transact-label{
+    -fx-font-size: 16px;
+    -fx-font-family:arial;
+}
+.transact-grid{
+    -fx-padding:10px 20px 10px 20px;
+}
+transaction importatn button
+.transact-btn{
+    -fx-background-color:#6D757B;
+    -fx-font-size:16px;
+    -fx-text-fill:#FFFFFF;
+    -fx-pref-width:150px;
+    -fx-cursor:hand;
+}
+
+.transact-btn:hover{
+    -fx-background-color:#8E969C;
+}
+#pay-btn{
+    -fx-background-color:#439E96;
+}*/
+
+.box{
+    -fx-background-color: white;
+    -fx-padding: 10px 10px 5px 10px; 
+    -fx-background: white;
+}
+.border-bottom{
+    -fx-border-color: black;
+    -fx-border-style: solid;
+    -fx-border-width: 0px 0px 0.5px 0px;
+}
+
+.space-inline{
+    -fx-padding:0px 10px 0px 10px;
+}
+.space-block{
+    -fx-padding:10px 0px 10px 0px;
+}
+
+.action-ok{
+    -fx-background-color: #2a9d8f;
+    -fx-text-fill: white;
+}
+.action-danger{
+    -fx-background-color: #e76f51;
+    -fx-text-fill: white;
+}
+
+/*navigattion butnn press*/
+.pressed{
+    -fx-background-color: white!important;
+}

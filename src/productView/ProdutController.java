@@ -42,6 +42,8 @@ import manager.util.BrandManager;
 import manager.util.CategoryManager;
 import manager.util.SkuManager;
 import excel.ExcelWriter;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 
 public class ProdutController implements Initializable {
 
@@ -57,9 +59,11 @@ public class ProdutController implements Initializable {
     private ComboBox categoryBox;
     @FXML
     private TextField search;
-    @FXML
-    private Button viewAll;
+    @FXML  private Button viewAll;
 
+    @FXML Label message;
+    @FXML ProgressBar progress;
+    
     private CreateProductController createProduct;
     private FilterController filterController;
 
@@ -358,7 +362,12 @@ public class ProdutController implements Initializable {
                 List<Item> items = new ArrayList<>();
 
                 new ExcelReader(sheet -> {
-
+                    
+                    int max = sheet.getLastRowNum();
+                    
+                    updateProgress(0,max);
+                    updateMessage("Reading File");
+                    
                     for (Row row : sheet) {
                         //exclude header
                         if (row.getRowNum() == 0) {
@@ -377,6 +386,10 @@ public class ProdutController implements Initializable {
                         item.setBarcode(row.getCell(7).getStringCellValue());
 
                         items.add(item);
+                               
+                    updateProgress(row.getRowNum(),max);
+                    updateMessage("Reading Row "+row.getRowNum());
+                        
                     }
 
                 }).read(file.get());
@@ -385,6 +398,10 @@ public class ProdutController implements Initializable {
                 final List<String> newCategory = new ArrayList<>();
                 final List<String> newBrand = new ArrayList<>();
 
+                updateProgress(0,100);
+                updateMessage("Checking Items");
+                
+                
                 items.forEach(item -> {
 
                     if (!DataManager.getInstance().getCategoryManager().inList(item.getCategory())) {
@@ -404,19 +421,30 @@ public class ProdutController implements Initializable {
                             newSku.add(item.getSku());
                         }
                     }
-
+                     updateMessage("Item: "+item.getName());
                 });
 
                 //save new brand / categories / sku to db
+                 updateMessage("Saving Brands");
                 ((BrandManager) DataManager.getInstance().getBrandManager()).addBatch(newBrand);
+                
+                 updateMessage("Saving Category");
                 ((CategoryManager) DataManager.getInstance().getCategoryManager()).addBatch(newCategory);
+                
+                 updateMessage("Saving SKU");
                 ((SkuManager) DataManager.getInstance().getSkuManager()).addBatch(newSku);
 
                 //track categories
+                updateMessage("Tracking Category");
                 manager.CategoryTracker.getInstance().add(newCategory);
 
                 //save products
+                updateMessage("Saving Items...");
                 itemManager.addAll(items);
+                
+                updateProgress(100,100);
+                updateMessage("Completed...");
+
                 return null;
             }
         };
@@ -424,6 +452,9 @@ public class ProdutController implements Initializable {
         task.setOnSucceeded(args -> Popup.message("File Succesfuly Imported!"));
         task.setOnFailed(args -> Popup.error("File Can't Be Read!"));
 
+        message.textProperty().bind(task.messageProperty());
+        progress.progressProperty().bind(task.progressProperty());
+        
         new Thread(task).start();
 
     }

@@ -18,6 +18,5 @@ public interface Cart {
     public int valueInCart(Item item);
     
     public boolean isEmpty();
-
    
 }

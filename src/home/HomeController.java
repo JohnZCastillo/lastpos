@@ -9,15 +9,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
-import manager.ItemManager;
-import manager.CategoryTracker;
-import manager.util.DataManager;
 
 public class HomeController implements Initializable {
 
   
     private Node product;
     private Node transaction;
+    private Node history;
+    private Node overview;
     
     @FXML private BorderPane mother;
     
@@ -28,6 +27,8 @@ public class HomeController implements Initializable {
             
             product = FXMLLoader.load(getClass().getResource("/productView/Product.fxml"));
             transaction = FXMLLoader.load(getClass().getResource("/transactionView/Transaction.fxml"));
+            history = FXMLLoader.load(getClass().getResource("/historyView/History.fxml"));
+            overview = FXMLLoader.load(getClass().getResource("/overviewView/Overview.fxml"));
             
         }catch(Exception e){
             e.printStackTrace();
@@ -42,5 +43,12 @@ public class HomeController implements Initializable {
         mother.setCenter(transaction);
     }
     
+    public void viewHistory(ActionEvent e){
+         mother.setCenter(history);
+    }
+    
+     public void viewOverview(ActionEvent e){
+         mother.setCenter(overview);
+    }
     
 }

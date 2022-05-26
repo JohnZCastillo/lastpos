@@ -6,10 +6,12 @@
 
 <BorderPane fx:id="mother" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="home.HomeController">
    <left>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="0.0" prefWidth="197.0" style="-fx-background-color: blue;" styleClass="nav" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#viewProduct" text="Button" />
-            <Button mnemonicParsing="false" onAction="#viewTransaction" text="Button" />
+            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#viewProduct" style="-fx-padding: 10; -fx-alignment: right;" styleClass="nav-button" text="PRODUCTS" />
+            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#viewTransaction" style="-fx-padding: 10; -fx-alignment: right;" styleClass="nav-button" text="TRANSACTIONS" />
+            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#viewHistory" style="-fx-padding: 10; -fx-alignment: right;" styleClass="nav-button" text="HISTORY" />
+            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#viewOverview" style="-fx-padding: 10; -fx-alignment: right;" styleClass="nav-button" text="OVERVIEW" />
          </children>
       </VBox>
    </left>

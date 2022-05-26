@@ -7,6 +7,7 @@ import java.util.Optional;
 public class DbManager {
 
 
+     
     public void update(String query, Setter setter) throws Exception {
         ConnectionManager conn = new ConnectionManager();
         conn.openConnection();
@@ -42,7 +43,7 @@ public class DbManager {
         }
     }
     
-       public <T> Optional<T> retrieve(String query, Setter setter,Result<T> result) throws Exception {
+    public <T> Optional<T> retrieve(String query, Setter setter,Result<T> result) throws Exception {
 
         ConnectionManager conn = new ConnectionManager();
         conn.openConnection();

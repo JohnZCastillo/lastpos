@@ -12,7 +12,9 @@ public class CartItem {
     final private SimpleDoubleProperty total = new SimpleDoubleProperty();
 
     public CartItem(Item item, int quantity) {
+        
         this.item = item;
+        
         setQuantity(quantity);
         setTotal(item.getSellingPrice() * quantity);
 

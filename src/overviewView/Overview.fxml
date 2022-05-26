@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="overviewView.OverviewController">
+   <top>
+      <VBox spacing="5.0" style="-fx-padding: 10;" BorderPane.alignment="CENTER">
+         <children>
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-color: grey;" styleClass="border-bottom" text="Today" textFill="#868080">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <HBox spacing="10.0">
+               <children>
+                  <VBox>
+                     <children>
+                        <Label fx:id="todaySales" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="btn-header" text="Label" />
+                        <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="SALES" />
+                     </children>
+                     <styleClass>
+                        <String fx:value="box" />
+                        <String fx:value="border-bottom" />
+                     </styleClass>
+                  </VBox>
+                  <VBox layoutX="10.0" layoutY="10.0">
+                     <children>
+                        <Label fx:id="todaySalesCost" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="btn-header" text="Label" />
+                        <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="SALES COST" />
+                     </children>
+                     <styleClass>
+                        <String fx:value="box" />
+                        <String fx:value="border-bottom" />
+                     </styleClass>
+                  </VBox>
+                  <VBox layoutX="10.0" layoutY="10.0">
+                     <children>
+                        <Label fx:id="todayGrossIncome" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="btn-header" text="Label" />
+                        <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="INCOME" />
+                     </children>
+                     <styleClass>
+                        <String fx:value="box" />
+                        <String fx:value="border-bottom" />
+                     </styleClass>
+                  </VBox>
+               </children>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <VBox prefHeight="483.0" prefWidth="1098.0" spacing="5.0" style="-fx-padding: 10;" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="monthlyLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-color: grey;" styleClass="border-bottom" text="Monthly Stat" textFill="#868080">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <GridPane hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" vgap="5.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="523.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+                  <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+               </rowConstraints>
+               <children>
+                  <BarChart fx:id="salesAndSalesCostChart" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                    <xAxis>
+                      <CategoryAxis fx:id="salesCategoryAxis" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis fx:id="salesNumberAxis" side="LEFT" />
+                    </yAxis>
+                  </BarChart>
+                  <BarChart fx:id="grossIncomeChart" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.rowIndex="1">
+                     <xAxis>
+                        <CategoryAxis fx:id="grossIncomeCategoryAxis" side="BOTTOM" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis fx:id="grossIncomeNumberAxis" side="LEFT" />
+                     </yAxis>
+                  </BarChart>
+               </children>
+            </GridPane>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>
