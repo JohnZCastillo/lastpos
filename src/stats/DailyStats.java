@@ -1,6 +1,7 @@
 package stats;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import javafx.beans.property.SimpleDoubleProperty;
 import util.TimeManager;
 import util.CurrencyFormat;
@@ -10,7 +11,7 @@ public class DailyStats {
     final private SimpleDoubleProperty sale = new SimpleDoubleProperty(0);
     final private SimpleDoubleProperty cost = new SimpleDoubleProperty(0);
     final private SimpleDoubleProperty profit = new SimpleDoubleProperty(0);
-    final private LocalDate date;
+    private LocalDate date;
 
     
     public DailyStats(){
@@ -64,6 +65,39 @@ public class DailyStats {
 
     public LocalDate getDate() {
         return date;
+    }
+    public void setDate(LocalDate date){
+        this.date = date;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DailyStats other = (DailyStats) obj;
+        if (!Objects.equals(this.sale, other.sale)) {
+            return false;
+        }
+        if (!Objects.equals(this.cost, other.cost)) {
+            return false;
+        }
+        if (!Objects.equals(this.profit, other.profit)) {
+            return false;
+        }
+        return Objects.equals(this.date, other.date);
     }
     
 }

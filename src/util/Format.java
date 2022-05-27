@@ -73,7 +73,7 @@ public class Format {
         
         final char seperatorChar = ',';
         
-        final Pattern p =  Pattern.compile("[0-9" + seperatorChar+".]*");
+        final Pattern p =  Pattern.compile("[0-9" + seperatorChar+"]*");
         
         textField.setTextFormatter(new TextFormatter<>(c -> {
            
@@ -91,8 +91,6 @@ public class Format {
             if (!p.matcher(newText).matches()) {
                 return null; // invalid change
             }
-
-       
             
             // invert everything before the range
             int suffixCount = c.getControlText().length() - c.getRangeEnd();

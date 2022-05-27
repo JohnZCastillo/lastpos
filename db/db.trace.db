@@ -8269,3 +8269,40 @@ SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS
 2022-05-26 21:10:52 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE)  IN [*]'2022-5-26'"; expected "("; SQL statement:
 SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE)  IN '2022-5-26' [42001-212]
+2022-05-26 22:28:06 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Parameter "#1" is not set; SQL statement:
+SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE) BETWEEN ? AND ? [90012-212]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:646)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.expression.Parameter.checkSet(Parameter.java:75)
+	at org.h2.command.Prepared.checkParameters(Prepared.java:186)
+	at org.h2.command.CommandContainer.query(CommandContainer.java:255)
+	at org.h2.command.Command.executeQuery(Command.java:190)
+	at org.h2.jdbc.JdbcPreparedStatement.executeQuery(JdbcPreparedStatement.java:128)
+	at db.manager.DbManager.retrieve(DbManager.java:36)
+	at db.stats.StatsDb.getMonthStats(StatsDb.java:65)
+	at db.stats.StatsDb.main(StatsDb.java:72)
+2022-05-26 22:56:29 jdbc[5]: exception
+org.h2.jdbc.JdbcSQLNonTransientException: Method is not allowed for a query. Use execute or executeQuery instead of executeUpdate; SQL statement:
+SELECT SUM(SELLING_PRICE * QUANTITY)  AS SALE, SUM(PURCHASE_COST * QUANTITY)  AS COST, FROM CART WHERE  CAST(`DATE` AS DATE) = ? [90001-212]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.message.DbException.get(DbException.java:188)
+	at org.h2.command.Prepared.update(Prepared.java:223)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:174)
+	at org.h2.command.Command.executeUpdate(Command.java:252)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdateInternal(JdbcPreparedStatement.java:209)
+	at org.h2.jdbc.JdbcPreparedStatement.executeUpdate(JdbcPreparedStatement.java:169)
+	at db.stats.StatsDb.lambda$getStatsToday$0(StatsDb.java:21)
+	at db.manager.DbManager.retrieve(DbManager.java:55)
+	at db.stats.StatsDb.getStatsToday(StatsDb.java:35)
+	at manager.StatsManager.update(StatsManager.java:23)
+	at manager.StatsManager.<init>(StatsManager.java:17)
+	at manager.StatsManager$StatsManagerHolder.<clinit>(StatsManager.java:40)
+	at manager.StatsManager.getInstance(StatsManager.java:36)
+	at Main.lambda$start$4(Main.java:27)
+	at java.base/java.lang.Thread.run(Thread.java:834)
