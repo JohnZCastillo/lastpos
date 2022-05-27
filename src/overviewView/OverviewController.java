@@ -16,6 +16,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
@@ -29,6 +30,8 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import manager.StatsManager;
@@ -99,6 +102,7 @@ public class OverviewController implements Initializable{
         
           setMonthlyData();
           
+          
 //        salesAndSalesCostChart.getData().add(salesData);
 //        salesAndSalesCostChart.getData().add(costData);
 //        grossIncomeChart.getData().add(grossIncomeData);
@@ -106,7 +110,6 @@ public class OverviewController implements Initializable{
         
     }
     
- 
     private void setMonthlyData(){
         
         Task<List<DailyStats>>task = new Task(){
@@ -144,11 +147,47 @@ public class OverviewController implements Initializable{
             grossIncomeData.getData().addAll(profit);
 
             Platform.runLater(() -> {
-                                 
+                   
+                for (var data : sale) {
+                    data.nodeProperty().addListener(new ChangeListener<Node>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Node> ov, Node oldNode, final Node node) {
+                            if (node != null) {
+                                displayLabelForData(data);
+                            }
+                        }
+                    });
+                }
+                
+                  for (var data : cost) {
+                    data.nodeProperty().addListener(new ChangeListener<Node>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Node> ov, Node oldNode, final Node node) {
+                            if (node != null) {
+                                displayLabelForData(data);
+                            }
+                        }
+                    });
+                }
+                  
+                      for (var data : profit) {
+                    data.nodeProperty().addListener(new ChangeListener<Node>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Node> ov, Node oldNode, final Node node) {
+                            if (node != null) {
+                                displayLabelForData(data);
+                            }
+                        }
+                    });
+                }
+              
+                
                 salesAndSalesCostChart.getData().add(salesData);
                 salesAndSalesCostChart.getData().add(costData);
                 grossIncomeChart.getData().add(grossIncomeData);
-           displayLabelForData(sale.get(4));
+                
+                System.out.println("Size: "+sale.size());
+       
 
             });
         });
@@ -158,24 +197,37 @@ public class OverviewController implements Initializable{
         });
         
         new Thread(task).start();
-        
     }
-  
+    /** places a text label with a bar's value above a bar node for a given XYChart.Data */
     private void displayLabelForData(XYChart.Data<String, Number> data) {
-        
-        System.out.println("Called");
-        
-        final Node node = data.getNode();
-        final Text dataText = new Text(data.getYValue() + "");
 
-        node.parentProperty().addListener(new ChangeListener<Parent>() {
-            @Override
-            public void changed(ObservableValue<? extends Parent> ov, Parent oldParent, Parent parent) {
-                Group parentGroup = (Group) parent;
-                parentGroup.getChildren().add(dataText);
-            }
-        })     ;
+      if((Double)data.getYValue() == 0)  return;
 
+      final Node node = data.getNode();
+
+      final Text dataText = new Text(util.Format.formatWithComma((Double)data.getYValue()));
+
+      node.parentProperty().addListener(new ChangeListener<Parent>() {
+        @Override public void changed(ObservableValue<? extends Parent> ov, Parent oldParent, Parent parent) {
+          Group parentGroup = (Group) parent;
+          parentGroup.getChildren().add(dataText);
+        }
+      });
+
+      node.boundsInParentProperty().addListener(new ChangeListener<Bounds>() {
+        @Override public void changed(ObservableValue<? extends Bounds> ov, Bounds oldBounds, Bounds bounds) {
+          dataText.setLayoutX(
+            Math.round(
+              bounds.getMinX() + bounds.getWidth() / 2 - dataText.prefWidth(-1) / 2
+            )
+          );
+          dataText.setLayoutY(
+            Math.round(
+              bounds.getMinY() - dataText.prefHeight(-1) * 0.5
+            )
+          );
+        }
+      });
     }
 
 }
